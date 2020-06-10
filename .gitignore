@@ -1,0 +1,9 @@
+**__pycache__
+*.pyc
+migrations
+git_integration/media/
+__pycache__
+/*/*/__pycache__
+/*/__pycache__
+__pycache__
+db.sqlite3
