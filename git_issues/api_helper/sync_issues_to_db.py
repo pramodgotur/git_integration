@@ -36,32 +36,38 @@ def sync_labels(repo):
 
 def sync_issues():
     global repo
-    sync_assignees(repo)
-    sync_labels(repo)
-    # issues = get_issues(repo, state="all")
-    issues = get_issues(repo)
     bulk_issue_objects = []
     all_issue_assignees = []
     all_issue_labels = []
     existing_issues = GithubIssues.objects.values_list('issue_number')
     print(existing_issues)
-    for issue in issues:
-        if issue.pull_request is None:
-            issue_number = issue.number
-            if (issue_number,) not in existing_issues:
-                issue_obj = GithubIssues()
-                issue_obj.title = issue.title
-                issue_obj.issue_number = issue_number
-                issue_obj.issue_created_at = issue.created_at
-                issue_obj.issue_url = issue.url
-                issue_obj.state = issue.state
-                bulk_issue_objects.append(issue_obj)
-            issue_assignees = issue.assignees
-            if issue_assignees:
-                all_issue_assignees.append((issue_number, issue_assignees))
-            issue_labels = issue.labels
-            if issue_labels:
-                all_issue_labels.append((issue_number, issue_labels))
+    try:
+        sync_assignees(repo)
+        sync_labels(repo)
+        issues = get_issues(repo, state="all")
+        for issue in issues:
+            if issue.pull_request is None:
+                issue_number = issue.number
+                if (issue_number,) not in existing_issues:
+                    issue_obj = GithubIssues()
+                    issue_obj.title = issue.title
+                    issue_obj.issue_number = issue_number
+                    issue_obj.issue_created_at = issue.created_at
+                    issue_obj.issue_url = issue.url
+                    issue_obj.state = issue.state
+                    bulk_issue_objects.append(issue_obj)
+                    if len(bulk_issue_objects) == 50:
+                        print("creating issue records....")
+                        GithubIssues.objects.bulk_create(bulk_issue_objects)
+                        bulk_issue_objects = []
+                issue_assignees = issue.assignees
+                if issue_assignees:
+                    all_issue_assignees.append((issue_number, issue_assignees))
+                issue_labels = issue.labels
+                if issue_labels:
+                    all_issue_labels.append((issue_number, issue_labels))
+    except Exception as e:
+        print(e)
     print(len(bulk_issue_objects))
     if bulk_issue_objects:
         GithubIssues.objects.bulk_create(bulk_issue_objects)
@@ -89,8 +95,3 @@ def sync_issues():
                 issue.save()
             except Exception as e:
                 print(e)
-
-
-# [(1194, [NamedUser(login="kevin-brown")])]
-# [(1201, [Label(name="docs")]), (1198, [Label(name="bug")]), (1184, [Label(name="docs")]),
-#  (758, [Label(name="bug")]), (441, [Label(name="i18n")]), (379, [Label(name="docs")])]

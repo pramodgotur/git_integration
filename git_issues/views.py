@@ -6,6 +6,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.status import *
 from git_issues.models import GithubIssues, Labels, GithubUsers
+import arrow
+from django.utils import timezone
+from datetime import timedelta
 
 
 def home(request):
@@ -18,23 +21,31 @@ def issues_view(request):
                "message": "successfully retrived issues", "data": []}
     filter_label = request.GET.get('label', None)
     filter_assignee = request.GET.get('assignee', None)
-    if filter_label and filter_assignee:
+    no_of_days = request.GET.get('no_of_days', None)
+    if no_of_days:
+        filter_datetime = timezone.now()-timedelta(days=int(no_of_days))
         issues = GithubIssues.objects.filter(
-            labels__id__in=[filter_label], assignees__id__in=[filter_assignee])
-    elif filter_label:
-        issues = GithubIssues.objects.filter(labels__id__in=[filter_label])
-    elif filter_assignee:
-        issues = GithubIssues.objects.filter(
-            assignees__id__in=[filter_assignee])
+            issue_created_at__gte=filter_datetime)
     else:
-        issues = GithubIssues.objects.all()
+        if filter_label and filter_assignee:
+            issues = GithubIssues.objects.filter(
+                labels__id__in=[filter_label], assignees__id__in=[filter_assignee])
+        elif filter_label:
+            issues = GithubIssues.objects.filter(labels__id__in=[filter_label])
+        elif filter_assignee:
+            issues = GithubIssues.objects.filter(
+                assignees__id__in=[filter_assignee])
+        else:
+            issues = GithubIssues.objects.all()
     paginator = CustomPagination()
     for issue in issues:
         issue_detail = {}
         issue_detail['id'] = issue.id
         issue_detail['title'] = issue.title
         issue_detail['issue_number'] = issue.issue_number
-        issue_detail['issue_created_at'] = issue.issue_created_at
+        fmt = "DD MMM YYYY, HH:mm ZZ"
+        issue_detail['issue_created_at'] = arrow.get(
+            issue.issue_created_at).to("Asia/Kolkata").format(fmt)
         issue_detail['issue_url'] = issue.issue_url
         issue_detail['state'] = issue.state
         context['data'].append(issue_detail)

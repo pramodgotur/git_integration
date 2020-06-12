@@ -21,6 +21,7 @@ class AdvancedPaginationTable extends Component {
     labels: [],
     selectedOptionAssignee: null,
     assignees: [],
+    no_of_days: 0,
   };
 
   getAPIEndpoint(perPage, selectedOptionLabel, selectedOptionAssignee) {
@@ -139,6 +140,30 @@ class AdvancedPaginationTable extends Component {
     this.setState({ assignees: assignees });
   }
 
+  handleDaysOnchange = (e) => {
+    this.setState({
+      no_of_days: e.target.value,
+    });
+  };
+
+  handleClick = async (e) => {
+    this.setState({
+      selectedOptionLabel: null,
+      selectedOptionAssignee: null,
+    });
+    const { perPage, no_of_days } = this.state;
+    let api_endpoint = `/api/issues/?page=1&per_page=${perPage}&no_of_days=${no_of_days}`;
+    console.log("api_endpoint in days change", api_endpoint);
+    this.setState({ loading: true });
+    const response = await axios.get(api_endpoint);
+    this.setState({
+      loading: false,
+      data: response.data.results,
+      totalRows: response.data.total,
+      perPage,
+    });
+  };
+
   render() {
     console.log("render....called.....");
 
@@ -150,19 +175,44 @@ class AdvancedPaginationTable extends Component {
 
     return (
       <div>
-        <Select
-          value={selectedOptionLabel}
-          onChange={this.handleChangeLabel}
-          options={labels}
-          placeholder="Select Labels"
-        />
-        <br></br>
-        <Select
-          value={selectedOptionAssignee}
-          onChange={this.handleChangeAssignee}
-          options={assignees}
-          placeholder="Select Assignee"
-        />
+        <div className="row">
+          <div className="col-sm-6">
+            <p>Filter By Label</p>
+            <Select
+              value={selectedOptionLabel}
+              onChange={this.handleChangeLabel}
+              options={labels}
+              placeholder="Select Labels"
+            />
+            <br></br>
+            <p>Filter By Assignee</p>
+            <Select
+              value={selectedOptionAssignee}
+              onChange={this.handleChangeAssignee}
+              options={assignees}
+              placeholder="Select Assignee"
+            />
+          </div>
+          <div className="col-sm-6">
+            <p>Enter Days to filter</p>
+            <input
+              type="number"
+              name="no_of_days"
+              value={this.state.no_of_days}
+              onChange={this.handleDaysOnchange}
+              required="required"
+              className="form-control"
+            ></input>
+            {/* </div>
+          <div className="col-sm-2">
+            <p></p> */}
+            <br></br>
+            <button className="btn btn-success" onClick={this.handleClick}>
+              Submit
+            </button>
+          </div>
+        </div>
+
         <br></br>
         <DataTable
           title="Github Issues"
