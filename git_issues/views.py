@@ -1,3 +1,4 @@
+import asyncio
 from git_issues.api_helper.pagination import CustomPagination
 from django.shortcuts import render
 

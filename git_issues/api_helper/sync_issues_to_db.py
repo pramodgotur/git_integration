@@ -1,8 +1,6 @@
 from git_issues.models import GithubIssues, GithubUsers, Labels
 from git_issues.api_helper.git_issues_api import get_issues, get_repo
 
-repo = get_repo()
-
 
 def sync_assignees(repo):
     assignees = repo.get_assignees()
@@ -35,13 +33,13 @@ def sync_labels(repo):
 
 
 def sync_issues():
-    global repo
     bulk_issue_objects = []
     all_issue_assignees = []
     all_issue_labels = []
     existing_issues = GithubIssues.objects.values_list('issue_number')
-    print(existing_issues)
+    total_issue_synced = 0
     try:
+        repo = get_repo()
         sync_assignees(repo)
         sync_labels(repo)
         issues = get_issues(repo, state="all")
@@ -57,7 +55,7 @@ def sync_issues():
                     issue_obj.state = issue.state
                     bulk_issue_objects.append(issue_obj)
                     if len(bulk_issue_objects) == 50:
-                        print("creating issue records....")
+                        total_issue_synced += len(bulk_issue_objects)
                         GithubIssues.objects.bulk_create(bulk_issue_objects)
                         bulk_issue_objects = []
                 issue_assignees = issue.assignees
@@ -68,11 +66,9 @@ def sync_issues():
                     all_issue_labels.append((issue_number, issue_labels))
     except Exception as e:
         print(e)
-    print(len(bulk_issue_objects))
     if bulk_issue_objects:
+        total_issue_synced += len(bulk_issue_objects)
         GithubIssues.objects.bulk_create(bulk_issue_objects)
-    print(all_issue_assignees)
-    print(all_issue_labels)
     if all_issue_assignees:
         for issue_number, issue_assignees in all_issue_assignees:
             try:
@@ -95,3 +91,4 @@ def sync_issues():
                 issue.save()
             except Exception as e:
                 print(e)
+    return total_issue_synced
