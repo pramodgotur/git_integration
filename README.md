@@ -53,7 +53,11 @@
 
         python manage.py sync_github_issues
 
-    9. Run server
+    9. Create user to login:
+
+        python manage.py createsuperuser
+
+    10. Run server
 
         python manage.py runserver
 

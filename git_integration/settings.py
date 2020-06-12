@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'git_issues',
     'corsheaders',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -86,6 +87,12 @@ DATABASES = {
         'PASSWORD': 'pamya',
         'HOST': 'localhost',
         'PORT': '3306',
+    }
+}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -143,3 +150,5 @@ WEBPACK_LOADER = {
 GITHUB_REPO = "pallets/jinja"
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+LOGIN_REDIRECT_URL = 'home'

@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from git_issues.views import home
+from django.contrib.auth.decorators import login_required
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('git_issues.urls')),
-    path('', home),
+    path('', login_required(home), name="home"),
+    path('accounts/', include('accounts.urls')),
+
 ]
