@@ -42,6 +42,7 @@ def sync_issues():
     issues = get_issues(repo)
     bulk_issue_objects = []
     all_issue_assignees = []
+    all_issue_labels = []
     existing_issues = GithubIssues.objects.values_list('issue_number')
     print(existing_issues)
     for issue in issues:
@@ -54,15 +55,42 @@ def sync_issues():
                 issue_obj.issue_created_at = issue.created_at
                 issue_obj.issue_url = issue.url
                 issue_obj.state = issue.state
-                issue_assignees = issue.assignees
-                if issue_assignees:
-                    all_issue_assignees.append((issue_number, issue_assignees))
                 bulk_issue_objects.append(issue_obj)
+            issue_assignees = issue.assignees
+            if issue_assignees:
+                all_issue_assignees.append((issue_number, issue_assignees))
+            issue_labels = issue.labels
+            if issue_labels:
+                all_issue_labels.append((issue_number, issue_labels))
     print(len(bulk_issue_objects))
     if bulk_issue_objects:
         GithubIssues.objects.bulk_create(bulk_issue_objects)
     print(all_issue_assignees)
-    # if issue_assignees:
-    #     assignees_names = [a.login for a in issue_assignees]
-    #     assignees = GithubUsers.objects.filter(
-    #         login_name__in=assignees_names)
+    print(all_issue_labels)
+    if all_issue_assignees:
+        for issue_number, issue_assignees in all_issue_assignees:
+            try:
+                issue = GithubIssues.objects.get(issue_number=issue_number)
+                assignees_names = [a.login for a in issue_assignees]
+                assignees = GithubUsers.objects.filter(
+                    login_name__in=assignees_names)
+                issue.assignees.set(assignees)
+                issue.save()
+            except Exception as e:
+                print(e)
+    if all_issue_labels:
+        for issue_number, issue_labels in all_issue_labels:
+            try:
+                issue = GithubIssues.objects.get(issue_number=issue_number)
+                label_names = [a.name for a in issue_labels]
+                labels = Labels.objects.filter(
+                    name__in=label_names)
+                issue.labels.set(labels)
+                issue.save()
+            except Exception as e:
+                print(e)
+
+
+# [(1194, [NamedUser(login="kevin-brown")])]
+# [(1201, [Label(name="docs")]), (1198, [Label(name="bug")]), (1184, [Label(name="docs")]),
+#  (758, [Label(name="bug")]), (441, [Label(name="i18n")]), (379, [Label(name="docs")])]

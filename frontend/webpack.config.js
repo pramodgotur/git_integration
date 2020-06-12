@@ -6,9 +6,9 @@ var BundleTracker = require("webpack-bundle-tracker");
 
 module.exports = {
   context: __dirname,
-  entry: "./frontend/js/main",
+  entry: "./js/main",
   output: {
-    path: path.resolve("./frontend/bundles/"),
+    path: path.resolve("./bundles/"),
     filename: "[name]-[hash].js",
     libraryTarget: "window",
   },

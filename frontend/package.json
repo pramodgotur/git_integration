@@ -25,6 +25,7 @@
     "react-data-table-component": "^6.9.3",
     "styled-components": "^4.0.0",
     "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/plugin-transform-runtime": "^7.10.1"
+    "@babel/plugin-transform-runtime": "^7.10.1",
+    "react-select": "^2.4.4"
   }
 }

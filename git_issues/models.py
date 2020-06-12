@@ -27,7 +27,7 @@ class GithubIssues(models.Model):
     assignees = models.ManyToManyField(
         GithubUsers, related_name="issue_assignees", blank=True)
     labels = models.ManyToManyField(
-        GithubUsers, related_name="issue_labels", blank=True)
+        Labels, related_name="issue_labels", blank=True)
     issue_created_at = models.DateTimeField()
     state = models.CharField(max_length=30, choices=STATE_CHOICES)
     issue_url = models.CharField(max_length=200)
