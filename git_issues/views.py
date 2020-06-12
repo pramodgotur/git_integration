@@ -1,11 +1,9 @@
-import asyncio
 from git_issues.api_helper.pagination import CustomPagination
 from django.shortcuts import render
 
-# Create your views here.
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.status import *
+from rest_framework.status import HTTP_200_OK
 from git_issues.models import GithubIssues, Labels, GithubUsers
 import arrow
 from django.utils import timezone
@@ -13,11 +11,17 @@ from datetime import timedelta
 
 
 def home(request):
+    """
+        All issues are listed in this view
+    """
     return render(request, 'home.html')
 
 
 @api_view(['GET'])
 def issues_view(request):
+    """
+        This api view return all repo issues
+    """
     context = {"status": True,
                "message": "successfully retrived issues", "data": []}
     filter_label = request.GET.get('label', None)
@@ -57,6 +61,9 @@ def issues_view(request):
 
 @api_view(['GET'])
 def labels_view(request):
+    """
+        This api view return labels
+    """
     context = {"status": True,
                "message": "successfully retrived labels", "data": []}
     labels = Labels.objects.all()
@@ -70,6 +77,9 @@ def labels_view(request):
 
 @api_view(['GET'])
 def assinees_view(request):
+    """
+        This api view return assinees
+    """
     context = {"status": True,
                "message": "successfully retrived assignees", "data": []}
     assignees = GithubUsers.objects.all()
