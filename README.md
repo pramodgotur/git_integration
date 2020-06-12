@@ -11,25 +11,25 @@
 
     1. Create Python 3 virtual environment
 
-        `python3 -m venv /path/to/new/virtual/environment`
+        python3 -m venv /path/to/new/virtual/environment
 
     2. Activate virtual environment
 
-        `source /path/to/new/virtual/environment`
+        source /path/to/new/virtual/environment
 
     3. change directory to folder git_integration
 
     4. Install requirement.txt
 
-        `pip install -r requirement.txt`
+        pip install -r requirement.txt
 
     5. create database
 
-        `create database DB_name;`
+        create database DB_name;
 
     6. Change database settings in git_integration/settings.py
 
-        `
+
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.mysql',
@@ -40,33 +40,33 @@
                     'PORT': '3306',
                 }
             }
-        `
+
 
     7. Run makemigrations and migrations command.
 
 
-        `python manage.py makemigrations`
-        `python manage.py migrate`
+        python manage.py makemigrations
+        python manage.py migrate
 
     8. Run following command to sync github issues to DB
             (You must be in git_integration folder)
 
-        `python manage.py sync_github_issues`
+        python manage.py sync_github_issues
 
     9. Run server
 
-        `python manage.py runserver`
+        python manage.py runserver
 
 # Instructions to setup Frontend
 
     1. change directory to folder git_integration/frontend
 
-        `cd git_integration/frontend`
+        cd git_integration/frontend
 
     2. To install npm packages run:
 
-        `npm install`
+        npm install
 
     3. To Bundle the React js modules using webpack run:
 
-        `./node_modules/.bin/webpack --config webpack.config.js`
+        ./node_modules/.bin/webpack --config webpack.config.js
