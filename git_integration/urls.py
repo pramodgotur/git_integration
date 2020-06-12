@@ -18,6 +18,6 @@ from django.urls import path, include
 from git_issues.views import home
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include('git_issues.urls')),
+    path('', include('git_issues.urls')),
     path('', home),
 ]
